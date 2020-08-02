@@ -1,20 +1,19 @@
 use std::ops;
-use std::vec;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Vec3 {
-  e: Vec<f64>,
+  e: [f64; 3],
 }
 
 impl Vec3 {
   pub fn new_zero() -> Vec3 {
     Vec3 {
-      e: vec![0.0, 0.0, 0.0],
+      e: [0.0, 0.0, 0.0],
     }
   }
 
   pub fn new(x: f64, y: f64, z: f64) -> Vec3 {
-    Vec3 { e: vec![x, y, z] }
+    Vec3 { e: [x, y, z] }
   }
 
   pub fn x(&self) -> f64 {
@@ -28,11 +27,28 @@ impl Vec3 {
   }
 
   pub fn length_squared(self) -> f64 {
-    self.e[0]*self.e[0] + self.e[1]*self.e[1] + self.e[2]*self.e[2]
+    self.e[0] * self.e[0] + self.e[1] * self.e[1] + self.e[2] * self.e[2]
   }
 
   pub fn length(self) -> f64 {
     self.length_squared().sqrt()
+  }
+
+  pub fn dot(u: Vec3, v: Vec3) -> f64 {
+    u.e[0] * v.e[0] + u.e[1] * v.e[1] + u.e[2] * v.e[2]
+  }
+
+  pub fn cross(u: Vec3, v: Vec3) -> Vec3 {
+    Vec3::new(
+      u.e[1] * v.e[2] - u.e[2] * v.e[1],
+      u.e[2] * v.e[0] - u.e[0] * v.e[2],
+      u.e[0] * v.e[1] - u.e[1] * v.e[0],
+    )
+  }
+
+  pub fn unit_vector(v: Vec3) -> Vec3 {
+    let len = v.length();
+    v / len
   }
 }
 
@@ -41,7 +57,7 @@ impl ops::Neg for Vec3 {
 
   fn neg(self) -> Self::Output {
     Vec3 {
-      e: vec![-self.e[0], -self.e[1], -self.e[2]],
+      e: [-self.e[0], -self.e[1], -self.e[2]],
     }
   }
 }
@@ -65,7 +81,7 @@ impl ops::Add for Vec3 {
 
   fn add(self, other: Self) -> Self {
     Self {
-      e: vec![
+      e: [
         self.e[0] + other.e[0],
         self.e[1] + other.e[1],
         self.e[2] + other.e[2],
@@ -77,10 +93,36 @@ impl ops::Add for Vec3 {
 impl ops::AddAssign for Vec3 {
   fn add_assign(&mut self, other: Self) {
     *self = Self {
-      e: vec![
+      e: [
         self.e[0] + other.e[0],
         self.e[1] + other.e[1],
         self.e[2] + other.e[2],
+      ],
+    };
+  }
+}
+
+impl ops::Sub for Vec3 {
+  type Output = Self;
+
+  fn sub(self, other: Self) -> Self {
+    Self {
+      e: [
+        self.e[0] - other.e[0],
+        self.e[1] - other.e[1],
+        self.e[2] - other.e[2],
+      ],
+    }
+  }
+}
+
+impl ops::SubAssign for Vec3 {
+  fn sub_assign(&mut self, other: Self) {
+    *self = Self {
+      e: [
+        self.e[0] - other.e[0],
+        self.e[1] - other.e[1],
+        self.e[2] - other.e[2],
       ],
     };
   }
@@ -91,18 +133,37 @@ impl ops::Div<f64> for Vec3 {
 
   fn div(self, other: f64) -> Self::Output {
     Self {
-      e: vec![self.e[0] / other, self.e[1] / other, self.e[2] / other],
+      e: [self.e[0] / other, self.e[1] / other, self.e[2] / other],
     }
   }
 }
 
+// impl ops::Div<f64> for &Vec3 {
+//   type Output = Self;
+
+//   fn div(self, other: f64) -> Self::Output {
+//     Self {
+//       e: [self.e[0] / other, self.e[1] / other, self.e[2] / other],
+//     }
+//   }
+// }
+
 impl ops::DivAssign<f64> for Vec3 {
   fn div_assign(&mut self, other: f64) {
-      self.e[0] /= other;
-      self.e[1] /= other;
-      self.e[2] /= other;
+    self.e[0] /= other;
+    self.e[1] /= other;
+    self.e[2] /= other;
   }
 }
 
 pub type Point3 = Vec3;
 pub type Color = Vec3;
+
+pub fn write_color(pixel_color: Vec3) -> String {
+  let ir = (255.99 * pixel_color.x()) as i64;
+  let ig = (255.99 * pixel_color.y()) as i64;
+  let ib = (255.99 * pixel_color.z()) as i64;
+
+  format!("{} {} {}", ir, ig, ib)
+}
+

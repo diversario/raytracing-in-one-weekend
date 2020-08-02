@@ -6,7 +6,7 @@ use std::fs::OpenOptions;
 mod vec3;
 
 fn main() {
-    let mut a = vec3::Point3::new(1.0, 2.0, 3.0);
+    let mut a = vec3::Vec3::new(1.0, 2.0, 3.0);
     let mut b = vec3::Point3::new(0.1, 0.2, 0.3);
     println!("{:?}", a);
     a = -a;
@@ -32,15 +32,13 @@ fn main() {
       print!("\rRendered {}%", (((height - y) as f64/ height as f64) * 100.0) as i64); io::stdout().flush().unwrap();
 
       for x in 0..width {
-        let r = x as f64/(width-1) as f64;
-        let g = y as f64/(height-1) as f64;
-        let b : f64 = 0.2;
+        let color = vec3::Color::new(
+          x as f64/(width-1) as f64,
+          y as f64/(height-1) as f64,
+          0.6,
+        );
 
-        let ir = (255.99*r) as i64;
-        let ig = (255.99*g) as i64;
-        let ib = (255.99*b) as i64;
-
-        writeln!(file, "{} {} {}", ir, ig, ib);
+        writeln!(file, "{}\n", vec3::write_color(color));
       };
     };
 
