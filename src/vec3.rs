@@ -138,16 +138,6 @@ impl ops::Div<f64> for Vec3 {
   }
 }
 
-// impl ops::Div<f64> for &Vec3 {
-//   type Output = Self;
-
-//   fn div(self, other: f64) -> Self::Output {
-//     Self {
-//       e: [self.e[0] / other, self.e[1] / other, self.e[2] / other],
-//     }
-//   }
-// }
-
 impl ops::DivAssign<f64> for Vec3 {
   fn div_assign(&mut self, other: f64) {
     self.e[0] /= other;
@@ -156,14 +146,20 @@ impl ops::DivAssign<f64> for Vec3 {
   }
 }
 
-pub type Point3 = Vec3;
-pub type Color = Vec3;
+impl ops::Mul<f64> for Vec3 {
+  type Output = Self;
 
-pub fn write_color(pixel_color: Vec3) -> String {
-  let ir = (255.99 * pixel_color.x()) as i64;
-  let ig = (255.99 * pixel_color.y()) as i64;
-  let ib = (255.99 * pixel_color.z()) as i64;
-
-  format!("{} {} {}", ir, ig, ib)
+  fn mul(self, other: f64) -> Self::Output {
+    Self {
+      e: [self.e[0] * other, self.e[1] * other, self.e[2] * other],
+    }
+  }
 }
 
+impl ops::MulAssign<f64> for Vec3 {
+  fn mul_assign(&mut self, other: f64) {
+    self.e[0] *= other;
+    self.e[1] *= other;
+    self.e[2] *= other;
+  }
+}
