@@ -10,7 +10,6 @@ mod ray;
 
 use vec3::Vec3;
 use point3::Point3;
-use color::Color;
 use ray::Ray;
 
 fn main() {
