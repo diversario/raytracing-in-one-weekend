@@ -7,10 +7,14 @@ mod vec3;
 mod color;
 mod point3;
 mod ray;
-
+mod hittable;
+mod hittable_list;
+mod sphere;
 use vec3::Vec3;
 use point3::Point3;
 use ray::Ray;
+
+
 
 fn main() {
     // Image
