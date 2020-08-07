@@ -9,10 +9,8 @@ pub struct HittableList {
 }
 
 impl HittableList {
-  pub fn new(object: Box<dyn Hittable>) -> HittableList {
-    return HittableList {
-      objects: vec![object],
-    };
+  pub fn new() -> HittableList {
+    return HittableList { objects: vec![] };
   }
 
   pub fn clear(&mut self) {
@@ -32,14 +30,17 @@ impl Hittable for HittableList {
     let mut closest_so_far = t_max;
 
     for object in &self.objects {
-        if object.hit(r, t_min, closest_so_far, &mut temp_rec) {
-            hit_anything = true;
-            closest_so_far = temp_rec.t;
-            *hit_record = temp_rec;
-        }
+      if object.hit(r, t_min, closest_so_far, &mut temp_rec) {
+        hit_anything = true;
+        closest_so_far = temp_rec.t;
+        // temp_rec.t = 0.0;
+        // temp_rec.front_face = true;
+        // temp_rec.normal = crate::vec3::Vec3::new(0.0, 0.0, 0.0);
+        // temp_rec.p = crate::vec3::Vec3::new(0.0, 0.0, 0.0);
+        *hit_record = temp_rec;
+      }
     }
 
     return hit_anything;
   }
 }
-

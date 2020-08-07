@@ -7,9 +7,7 @@ pub struct Vec3 {
 
 impl Vec3 {
   pub fn new_zero() -> Vec3 {
-    Vec3 {
-      e: [0.0, 0.0, 0.0],
-    }
+    Vec3 { e: [0.0, 0.0, 0.0] }
   }
 
   pub fn new(x: f64, y: f64, z: f64) -> Vec3 {

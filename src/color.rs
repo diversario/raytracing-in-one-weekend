@@ -9,4 +9,3 @@ pub fn write_color(pixel_color: Color) -> String {
 
   format!("{} {} {}", ir, ig, ib)
 }
-
