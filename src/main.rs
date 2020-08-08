@@ -3,13 +3,18 @@ use std::fs::OpenOptions;
 use std::io;
 use std::io::Write;
 
+mod camera;
 mod color;
+mod common;
 mod hittable;
 mod hittable_list;
 mod point3;
 mod ray;
 mod sphere;
 mod vec3;
+
+use common::random_float;
+use common::random_float_range;
 use point3::Point3;
 use ray::Ray;
 use sphere::Sphere;
@@ -33,6 +38,7 @@ fn main() {
   let aspect_ratio = 16.0 / 9.0;
   let image_width = 400.0;
   let image_height = (image_width / aspect_ratio) as i64 as f64;
+  const samples_per_pixel: i8 = 100;
 
   // World
   let mut world = hittable_list::HittableList::new();
@@ -40,15 +46,7 @@ fn main() {
   world.add(Sphere::new_boxed(Point3::new(0.0, -100.5, -1.0), 100.0));
 
   // Camera
-  let viewport_height = 2.0;
-  let viewport_width = aspect_ratio * viewport_height;
-  let focal_length = 1.0;
-
-  let origin = Point3::new(0.0, 0.0, 0.0);
-  let horizontal = Vec3::new(viewport_width, 0.0, 0.0);
-  let vertical = Vec3::new(0.0, viewport_height, 0.0);
-  let lower_left_corner =
-    origin - horizontal / 2.0 - vertical / 2.0 - Vec3::new(0.0, 0.0, focal_length);
+  let cam = camera::Camera::new();
 
   let mut file: fs::File;
 
@@ -71,14 +69,20 @@ fn main() {
     io::stdout().flush().unwrap();
 
     for x in 0..image_width as i64 {
-      let u = x as f64 / (image_width - 1.0) as f64;
-      let v = y as f64 / (image_height - 1.0) as f64;
+      let mut pixel_color = color::Color::new_zero();
 
-      let ray = Ray::new(origin, lower_left_corner + horizontal * u + vertical * v);
-      let pixel_color = ray_color(&ray, &world);
-      // let pixel_color = ray::ray_color(&ray);
+      for _ in 0..samples_per_pixel {
+        let u = (x as f64 + random_float()) / (image_width - 1.0) as f64;
+        let v = (y as f64 + random_float()) / (image_height - 1.0) as f64;
+        let ray = cam.get_ray(u, v);
+        pixel_color += ray_color(&ray, &world);
+      }
 
-      writeln!(file, "{}\n", color::write_color(pixel_color));
+      writeln!(
+        file,
+        "{}\n",
+        color::write_color(pixel_color, samples_per_pixel)
+      );
     }
   }
 

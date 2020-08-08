@@ -1,3 +1,3 @@
-use crate::vec3::Vec3;
+use super::*;
 
 pub type Point3 = Vec3;

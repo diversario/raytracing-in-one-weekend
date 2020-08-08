@@ -1,6 +1,4 @@
-use crate::point3::Point3;
-use crate::ray::Ray;
-use crate::vec3::Vec3;
+use super::*;
 
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub struct HitRecord {
