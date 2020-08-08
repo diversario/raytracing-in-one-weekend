@@ -62,13 +62,11 @@ impl Vec3 {
     )
   }
 
-  pub fn random_in_unit_sphere() -> Vec3 {
-    loop {
-      let p = Vec3::random_range(-1.0, 1.0);
-      if p.length_squared() < 1.0 {
-        return p;
-      }
-    }
+  pub fn random_unit_vector() -> Vec3 {
+    let a = random_float_range(0.0, 2.0 * std::f64::consts::PI);
+    let z = random_float_range(-1.0, 1.0);
+    let r = (1.0 - z * z).sqrt();
+    return Vec3::new(r * a.cos(), r * a.sin(), z);
   }
 }
 

@@ -28,7 +28,7 @@ fn ray_color(r: &Ray, world: &dyn hittable::Hittable, depth: i64) -> Vec3 {
       return color::Color::new_zero();
     }
 
-    let target = rec.p + rec.normal + Vec3::random_in_unit_sphere();
+    let target = rec.p + rec.normal + Vec3::random_unit_vector();
     return ray_color(&Ray::new(rec.p, target - rec.p), world, depth - 1) * 0.5;
   }
 
