@@ -20,11 +20,16 @@ use ray::Ray;
 use sphere::Sphere;
 use vec3::Vec3;
 
-fn ray_color(r: &Ray, world: &dyn hittable::Hittable) -> Vec3 {
+fn ray_color(r: &Ray, world: &dyn hittable::Hittable, depth: i64) -> Vec3 {
   let mut rec: hittable::HitRecord = Default::default();
 
-  if world.hit(r, 0.0, f64::INFINITY, &mut rec) {
-    return (rec.normal + color::Color::new(1.0, 1.0, 1.0)) * 0.5;
+  if world.hit(r, 0.001, f64::INFINITY, &mut rec) {
+    if depth <= 0 {
+      return color::Color::new_zero();
+    }
+
+    let target = rec.p + rec.normal + Vec3::random_in_unit_sphere();
+    return ray_color(&Ray::new(rec.p, target - rec.p), world, depth - 1) * 0.5;
   }
 
   let unit_direction = Vec3::unit_vector(r.direction());
@@ -38,7 +43,8 @@ fn main() {
   let aspect_ratio = 16.0 / 9.0;
   let image_width = 400.0;
   let image_height = (image_width / aspect_ratio) as i64 as f64;
-  const samples_per_pixel: i8 = 100;
+  const SAMPLES_PER_PIXEL: i64 = 200;
+  const MAX_BOUNCES: i64 = 50;
 
   // World
   let mut world = hittable_list::HittableList::new();
@@ -71,17 +77,17 @@ fn main() {
     for x in 0..image_width as i64 {
       let mut pixel_color = color::Color::new_zero();
 
-      for _ in 0..samples_per_pixel {
+      for _ in 0..SAMPLES_PER_PIXEL {
         let u = (x as f64 + random_float()) / (image_width - 1.0) as f64;
         let v = (y as f64 + random_float()) / (image_height - 1.0) as f64;
         let ray = cam.get_ray(u, v);
-        pixel_color += ray_color(&ray, &world);
+        pixel_color += ray_color(&ray, &world, MAX_BOUNCES);
       }
 
       writeln!(
         file,
         "{}\n",
-        color::write_color(pixel_color, samples_per_pixel)
+        color::write_color(pixel_color, SAMPLES_PER_PIXEL)
       );
     }
   }
